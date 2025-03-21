@@ -1,3 +1,7 @@
+// This script takes a path to a zip file as an argument, extracts the course
+// data from it, and generates a JSON file for the course.  It also adds the
+// course card image to the project, and determines the size of each video in
+// the course.
 import fs from "fs";
 import JSZip from "jszip";
 
@@ -61,7 +65,8 @@ for (const dataPath of dataPaths) {
 
   if (
     dataJSON["resource_type"] === "Video" &&
-    (dataJSON["file"] || dataJSON["archive_url"])
+    (dataJSON["file"] || dataJSON["archive_url"]) &&
+    !cardData.videos.some((v) => v.youtubeKey === dataJSON.youtube_key)
   ) {
     console.log(`getting length for ${dataJSON.title}`);
     const videoUrl = dataJSON["file"]
@@ -78,6 +83,7 @@ for (const dataPath of dataPaths) {
       contentLength: length,
       // these seem to be applied very inconsistently
       categories: dataJSON["learning_resource_types"],
+      captionsFile: dataJSON["captions_file"],
     });
   }
 }
